@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, of, tap, throwError } from 'rxjs';
+import { Injectable, inject, signal, computed } from '@angular/core';
+import { HttpClient, httpResource } from '@angular/common/http';
+import { Observable, catchError, map, of, throwError } from 'rxjs';
 import { Chamber, ChamberDifficulty, ChamberSector } from '../models/chamber.model';
 
 interface JsonPlaceholderPost {
@@ -17,14 +17,25 @@ export class ChamberService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-  // Signals para gerenciamento de estado
-  readonly chambers = signal<Chamber[]>([]);
-  readonly loading = signal<boolean>(false);
-  readonly error = signal<string | null>(null);
+  // Recurso Reativo Nativo do Angular (httpResource Signal API)
+  private readonly postsResource = httpResource<JsonPlaceholderPost[]>(() => `${this.apiUrl}?_limit=12`);
 
-  // Lista de códigos ARG decodificados pelo usuário nesta sessão
+  // Lista de códigos ARG decodificados pelo usuário nesta sessão (Signals)
   readonly unlockedSecrets = signal<string[]>([]);
   readonly bookmarkedChamberIds = signal<number[]>([]);
+
+  // Computed Signals derivados diretamente do httpResource (Sem mutação manual de signals)
+  readonly chambers = computed<Chamber[]>(() => {
+    const posts = this.postsResource.value() ?? [];
+    return this.mapPostsToChambers(posts);
+  });
+
+  readonly loading = computed<boolean>(() => this.postsResource.isLoading());
+
+  readonly error = computed<string | null>(() => {
+    const err = this.postsResource.error();
+    return err ? 'Falha ao sincronizar arquivos de confinamento com a rede central teocrática.' : null;
+  });
 
   // Dados temáticos complementares baseados na hierarquia de confinamento
   private readonly thematicLores = [
@@ -75,42 +86,19 @@ export class ChamberService {
   ];
 
   loadChambers(): void {
-    this.loading.set(true);
-    this.error.set(null);
-
-    this.http.get<JsonPlaceholderPost[]>(`${this.apiUrl}?_limit=12`).pipe(
-      map(posts => this.mapPostsToChambers(posts)),
-      tap(chambers => {
-        this.chambers.set(chambers);
-        this.loading.set(false);
-      }),
-      catchError(err => {
-        const errorMsg = 'Falha ao sincronizar arquivos de confinamento com a rede central teocrática.';
-        this.error.set(errorMsg);
-        this.loading.set(false);
-        return throwError(() => new Error(errorMsg));
-      })
-    ).subscribe();
+    this.postsResource.reload();
   }
 
   getChamberById(id: number): Observable<Chamber> {
-    // Se já estiver em cache nos signals
     const cached = this.chambers().find(c => c.id === id);
     if (cached) {
       return of(cached);
     }
 
-    // Caso o usuário acesse a rota direta /camaras/:id
-    this.loading.set(true);
     return this.http.get<JsonPlaceholderPost>(`${this.apiUrl}/${id}`).pipe(
       map(post => this.mapSinglePostToChamber(post)),
-      tap(chamber => {
-        this.loading.set(false);
-      }),
       catchError(err => {
-        this.loading.set(false);
         const errorMsg = `Dossiê #${id} corrompido ou inexistente nos arquivos imperiais.`;
-        this.error.set(errorMsg);
         return throwError(() => new Error(errorMsg));
       })
     );
@@ -147,7 +135,6 @@ export class ChamberService {
     const themeIdx = (post.id - 1) % this.thematicLores.length;
     const theme = this.thematicLores[themeIdx];
 
-    // Formatando nome elegante e brutalista baseado no título do post
     const cleanTitle = post.title.split(' ').slice(0, 3).join(' ').toUpperCase();
     const formattedName = `CÂMARA ${post.id}: ${cleanTitle}`;
 
