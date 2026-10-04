@@ -1,1 +1,64 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #121418;
+    color: #E5E7EB;
+    overflow-x: hidden;
+  }
+
+  /* Custom Brutalist Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #121418;
+    border-left: 1px solid #2E3542;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #2E3542;
+    border: 1px solid #1B1F26;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #F2E205;
+  }
+}
+
+/* Atmospheric Brutalist Grid & Grain Pattern */
+.bg-brutalist-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(46, 53, 66, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 53, 66, 0.35) 1px, transparent 1px);
+}
+
+.bg-dither-dots {
+  background-image: radial-gradient(rgba(242, 226, 5, 0.15) 1px, transparent 0);
+  background-size: 16px 16px;
+}
+
+/* CRT Scanline subtle overlay */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 20, 24, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+}
+
+/* Brutalist Button press effect */
+.btn-brutalist {
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+.btn-brutalist:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000000 !important;
+}
+
