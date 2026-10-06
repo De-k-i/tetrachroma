@@ -2,8 +2,8 @@
 
 > **Projeto Acadêmico:** *Da Capa para a Tela*  
 > **Capa Escolhida:** *Polygondwanaland* (2017) — King Gizzard & the Lizard Wizard (Direção de Arte: Jason Galea)  
-> **Framework:** Angular 19 (Signals & Control Flow Moderno) + Tailwind CSS  
-> **Status:** Concluído & Validado
+> **Framework:** Angular 19 (Signals & Control Flow Moderno) + Tailwind CSS Brutalista  
+> **Status:** Concluído, Validado & Sem Erros de Compilação
 
 ---
 
@@ -13,14 +13,19 @@
 * **A Régua (Frase de Direção Funcional):**
   > *"Escolhi esta capa porque ela retrata o confinamento ritualístico de súditos em busca da quarta cor a mando de seu governante, e por isso meu site é uma plataforma de experiências imersivas de escape room com mecânicas de ARG (Alternate Reality Game) integradas na interface para decodificação de enigmas e liberação de acessos e descontos."*
 
+* **A Filosofia de Rotação das Câmaras:**  
+  Em vez de dezenas de salas genéricas de catálogo, o santuário opera no modelo realista de escape rooms de alta imersão: **4 câmaras canônicas** baseadas no ciclo de *Polygondwanaland*, organizadas em uma rotação de **2 salas ativas em operação presencial** e **2 salas em montagem para o próximo ciclo**, com valor de tributo padronizado (R$ 110,00 por iniciado).
+
 ---
 
-## 📂 2. Documentação Oficial do Projeto
-Todos os arquivos obrigatórios das Fases 1, 2 e 3 estão disponíveis na raiz do projeto:
+## 📂 2. Documentos Oficiais do Projeto
 
-* 📄 [CONCEITO.md](./CONCEITO.md) — Identificação da obra, links, justificativa da palavra-conceito, ligação funcional e distinção entre decisões da IA vs. decisões autorais do desenvolvedor.
+Todos os arquivos teóricos e de direção de arte das Fases 1, 2 e 3 estão disponíveis na raiz do projeto:
+
+* 📄 [CONCEITO.md](./CONCEITO.md) — Identificação da obra, links de domínio público, justificativa da palavra-conceito, ligação funcional e distinção entre decisões da IA vs. decisões autorais do desenvolvedor.
 * 🎨 [MOODBOARD.md](./MOODBOARD.md) — Painel de clima com 16 referências distribuídas nos 4 grupos obrigatórios (Conceito, Cor e Luz, Textura e Forma, Interface) com termos de busca e justificativa individual.
-* 📐 [IDENTIDADE_VISUAL.md](./IDENTIDADE_VISUAL.md) — Contrato visual com paleta 60-30-10 (`#121418`, `#1B1F26`, `#F2E205`, `#2175BF`, `#D90404`, `#10B981`), tipografia (*Space Grotesk* e *Space Mono*), formas estritamente retas e wireframes estruturados.
+* 📐 [IDENTIDADE_VISUAL.md](./IDENTIDADE_VISUAL.md) — Contrato visual com paleta 60-30-10 (`#121418`, `#1B1F26`, `#F2E205`, `#2175BF`, `#D90404`, `#10B981`), tipografia (*Space Grotesk* e *Space Mono*), formas estritamente retas (`rounded-none`), sombras secas ortogonais e wireframes estruturados de todas as telas.
+* 📕 [Moodboard & Identidade Visual (PDF do Figma)](./docs/Moodboard_e_Identidade_Visual.pdf) — Prancha visual completa exportada em alta resolução contendo o Moodboard com as 16 referências catalogadas e o Guia de Identidade Visual com os mockups em escala desktop.
 
 ---
 
@@ -28,22 +33,54 @@ Todos os arquivos obrigatórios das Fases 1, 2 e 3 estão disponíveis na raiz d
 
 | Requisito do Edital | Implementação no Projeto | Arquivo / Código de Referência |
 | :--- | :--- | :--- |
-| **Zero Tolerância: Proibido `*ngIf` e `*ngFor`** | **100% nova sintaxe Angular 17/18/19:** `@if`, `@else if`, `@else`, `@for (item of items; track item.id)` e `@empty`. | Em todos os templates HTML. Zero diretivas legadas. |
-| **Zero Tolerância: Capa Proibida no Site** | A arte original da capa **não é exibida nem reproduzida** no site. Apenas sua essência conceitual, geométrica e paleta de cores foram transportadas para a interface. | Atendido integralmente. |
+| **Zero Tolerância: Proibido `*ngIf` e `*ngFor`** | **100% nova sintaxe Angular 17/18/19:** `@if`, `@else if`, `@else`, `@for (item of items; track item.id)` e `@empty`. | Em todos os templates HTML do projeto. Zero diretivas legadas. |
+| **Zero Tolerância: Capa Proibida no Site** | A arte original da capa **não é exibida nem reproduzida** no site. Apenas sua essência conceitual, arquitetura e paleta de cores foram transportadas para a interface. | Atendido integralmente. |
 | **Zero Tolerância: Nome do Álbum/Banda Proibido** | O projeto adota o nome autoral **TETRACHROMA**. | Atendido integralmente. |
-| **Pelo menos 3 rotas ativas com menu e destaque** | 1. `/camaras` (Catálogo e filtros)<br>2. `/camaras/:id` (Dossiê detalhado com parâmetro)<br>3. `/iniciar` (Formulário de Convocação & ViaCEP)<br>4. `/codex` (Codex ARG & Console Mestre)<br>5. `**` (Câmara Proibida / 404 Temático). Menu com `routerLinkActive`. | [`app.routes.ts`](src/app/app.routes.ts) & [`header-nav.component.ts`](src/app/components/header-nav/header-nav.component.ts) |
-| **Rota com Parâmetro (`/algo/:id`)** | `/camaras/:id` carrega o dossiê da câmara correspondente com terminal de decodificação ARG interativo. | [`chamber-detail.component.ts`](src/app/pages/chamber-detail/chamber-detail.component.ts) |
-| **Componentes Reutilizáveis com `input()`** | `ChamberCardComponent` e `ArgBadgeComponent` recebem dados através da função reativa `input()` e `input.required()`. | [`chamber-card.component.ts`](src/app/components/chamber-card/chamber-card.component.ts) |
-| **Componente avisando o pai com `output()`** | `ChamberCardComponent` emite eventos `(inspect)` e `(bookmarkToggle)` para o componente pai atualizar estado e disparar o modal de pré-visualização. | [`chamber-card.component.ts`](src/app/components/chamber-card/chamber-card.component.ts) |
-| **Estado reativo 100% com `signal()`** | Todo dado mutável na tela é gerenciado por `signal()`. Nenhum dado derivado guardado em signal e recalculado manualmente. | [`chamber.service.ts`](src/app/services/chamber.service.ts) e páginas. |
-| **Pelo menos 3 `computed()` com trabalho real** | 1. `filteredChambers = computed(...)` (filtro cruzado por texto, setor e dificuldade)<br>2. `totalActiveChambers = computed(...)` (contagem de itens filtrados)<br>3. `averageEscapeRate = computed(...)` (cálculo dinâmico da taxa média de sobrevivência das câmaras)<br>4. `finalPrice = computed(...)` (cálculo de preço * número de pessoas menos cupom ARG). | [`chamber-list.component.ts`](src/app/pages/chamber-list/chamber-list.component.ts) & [`booking.component.ts`](src/app/pages/booking/booking.component.ts) |
-| **Serviço com `inject()` consumindo API pública** | `ChamberService` usa `inject(HttpClient)` consumindo API pública com estados de `loading()` e `error()` com botão de reconexão. | [`chamber.service.ts`](src/app/services/chamber.service.ts) |
-| **Formulário com validação e botão desabilitado** | Formulário reativo de Iniciação (`/iniciar`) com validações de nome, e-mail, contingente, turno e consulta assíncrona ao **ViaCEP**. O botão permanece **rigorosamente desabilitado enquanto `bookingForm.invalid`**. | [`booking.component.ts`](src/app/pages/booking/booking.component.ts) |
-| **Tailwind CSS + Brutalismo** | Cores customizadas (`tetra-graphite`, `tetra-slate`, `tetra-solar`, `tetra-cobalt`, `tetra-carmine`, `tetra-emerald`), cantos estritamente retos (`rounded-none`), linhas de 1px e sombras duras (`4px 4px 0px #000`). | [`tailwind.config.js`](tailwind.config.js) & [`styles.css`](src/styles.css) |
+| **Pelo menos 3 rotas ativas com menu e destaque** | 1. `/camaras` (Catálogo, rotação e filtros)<br>2. `/camaras/:id` (Dossiê tático e puzzle ARG)<br>3. `/iniciar` (Formulário de Iniciação & ViaCEP)<br>4. `/codex` (Manifesto, Léxico e Console Mestre)<br>5. `/login` & `/admin` (Autenticação JWT e Painel do Hierofante)<br>6. `**` (Câmara Proibida / 404 temática). Menu com `routerLinkActive`. | [`app.routes.ts`](src/app/app.routes.ts) & [`header-nav.component.ts`](src/app/components/header-nav/header-nav.component.ts) |
+| **Rota com Parâmetro (`/algo/:id`)** | `/camaras/:id` carrega dinamicamente o dossiê da câmara correspondente com terminal de puzzle mecânico dedicado. | [`chamber-detail.component.ts`](src/app/pages/chamber-detail/chamber-detail.component.ts) |
+| **Componentes Reutilizáveis com `input()`** | `ChamberCardComponent`, `ChamberPuzzleComponent`, `ArgBadgeComponent` e `LoreTermComponent` recebem propriedades reativas via `input()` e `input.required()`. | Diretório [`src/app/components/`](src/app/components/) |
+| **Componente avisando o pai com `output()`** | `ChamberCardComponent` emite `(bookmarkToggle)` para favoritar salas, e `ChamberPuzzleComponent` emite `(unlocked)` ao resolver enigmas mecânicos. | [`chamber-card.component.ts`](src/app/components/chamber-card/chamber-card.component.ts) e [`chamber-puzzle.component.ts`](src/app/components/chamber-puzzle/chamber-puzzle.component.ts) |
+| **Estado reativo 100% com `signal()`** | Todo dado mutável na aplicação é gerenciado por `signal()`. Nenhum dado derivado guardado em signal e recalculado manualmente. | [`chamber.service.ts`](src/app/services/chamber.service.ts), [`auth.service.ts`](src/app/auth/auth.service.ts) e páginas. |
+| **Pelo menos 3 `computed()` com trabalho real** | 1. `filteredChambers = computed(...)` (filtro cruzado por texto, setor, ciclo e dificuldade)<br>2. `totalActiveChambers = computed(...)` (contagem de itens filtrados)<br>3. `averageEscapeRate = computed(...)` (cálculo dinâmico da taxa média de sobrevivência das câmaras filtradas)<br>4. `finalPrice = computed(...)` (cálculo do tributo: participantes × preço base menos desconto ARG conquistado). | [`chamber-list.component.ts`](src/app/pages/chamber-list/chamber-list.component.ts) & [`booking.component.ts`](src/app/pages/booking/booking.component.ts) |
+| **Serviço com `inject()` consumindo API pública** | `ChamberService` usa `inject(HttpClient)` consumindo endpoint público local com tratamento de `loading()` e `error()`. O agendamento consome a API externa **ViaCEP**. | [`chamber.service.ts`](src/app/services/chamber.service.ts) & [`booking.component.ts`](src/app/pages/booking/booking.component.ts) |
+| **Formulário com validação e botão desabilitado** | Formulário reativo de Iniciação (`/iniciar`) com validações de nome, e-mail, telefone, contingente (2 a 8), data, turno e consulta assíncrona ao **ViaCEP**. O botão permanece **rigorosamente desabilitado enquanto `bookingForm.invalid`**. | [`booking.component.ts`](src/app/pages/booking/booking.component.ts) |
+| **Tailwind CSS + Brutalismo** | Cores customizadas (`tetra-graphite`, `tetra-slate`, `tetra-solar`, `tetra-cobalt`, `tetra-carmine`, `tetra-emerald`), cantos estritamente retos (`rounded-none`), divisórias duras de 1px e sombras ortogonais secas (`4px 4px 0px #000`). | [`tailwind.config.js`](tailwind.config.js) & [`styles.css`](src/styles.css) |
 
 ---
 
-## 🚀 4. Como Executar o Projeto Localmente
+## 🧩 4. O Sistema de Puzzles ARG (Sem Muletas ou Spoilers)
+
+Cada uma das 4 câmaras possui um desafio mecânico/lógico diferente, projetado segundo princípios autênticos de escape rooms: **o mecanismo é testado como um todo, sem indicar acertos parciais**:
+
+1. **Câmara 1: O Cubo do Silêncio (`/camaras/1`) — *Geometria Espacial***
+   - **Enigma:** Cofre mecânico de alvenaria com 3 mostradores (`▲ / ▼`).
+   - **Dedução:** A soma geométrica dos elementos fundamentais do cubo: 6 faces + 8 vértices + 12 arestas = **26** (`[ 0 ] - [ 2 ] - [ 6 ]` ou chave `CUBE26`). Concede 10% de desconto.
+2. **Câmara 2: Engrenagens da Horologia (`/camaras/2`) — *Ressonância Harmônica***
+   - **Enigma:** 4 eixos mecânicos com pêndulos oscilando em tempo real, cada um calibrado por uma manivela de 4 entalhes.
+   - **Dedução:** A cadência sagrada de 12 batimentos (`TIC-TAC-12`). O jogador calibra as 4 manivelas (`3 + 2 + 4 + 3 = 12`) e aciona a trava mestre. Se houver descompasso, o sistema falha em conjunto sem revelar quais eixos erraram. Concede 20% de desconto.
+3. **Câmara 3: Provação de Lealdade (`/camaras/3`) — *Investigação DevTools / F12***
+   - **Enigma:** A pista de lore indica que o segredo não foi gravado na pedra visível, mas nos alicerces do código-fonte.
+   - **Dedução:** Inspecionar o código HTML (F12) para localizar o comentário secreto do Hierofante contendo a chave `LOYAL7`. Acessibilidade garantida com visor de código simulado para celulares. Concede 15% de desconto.
+4. **Câmara 4: Castelo em Colapso (`/camaras/4`) — *Ótica e Síntese de Cores***
+   - **Enigma:** Três prismas de quartzo (Amarelo Solar, Carmim, Azul Cobalto) com seletores de ângulo de refração (30°, 60°, 90°, 120°).
+   - **Dedução:** A inscrição do salão hexagonal exige a tríade geométrica (Solar a 90°, Carmim a 120°, Cobalto a 60°). Ao disparar os feixes no zênite, a Quarta Cor se manifesta e autentica a chave mestre `TETRA-V4`. Concede 25% de desconto.
+
+---
+
+## 🔐 5. Autenticação & Painel Administrativo
+
+O sistema possui controle de acesso com autenticação JWT simulada:
+* **Rota Protegida:** `/admin` (requer perfil de Administrador).
+* **Guards & Interceptors:** `AuthGuard` bloqueia acessos não autorizados e redireciona para `/login`; `AuthInterceptor` anexa automaticamente o token `Bearer` nas requisições HTTP.
+* **Credenciais de Acesso para Avaliação:**
+  - **Hierofante (Administrador):**  
+    `iniciado@tetrachroma.com` / `hierofante123`
+  - **Súdito Comum:**  
+    `sudito@tetrachroma.com` / `sudito123`
+
+---
+
+## 🚀 6. Como Executar o Projeto Localmente
 
 ### Pré-requisitos
 * Node.js (v18+) e NPM instalados.
@@ -62,33 +99,31 @@ npx ng serve
 # Abra http://localhost:4200
 ```
 
-Para gerar a build de produção:
+Para validar a integridade da build de produção:
 ```bash
 npm run build
 ```
 
 ---
 
-## 🎤 5. Guia Rápido para a Apresentação Oral (5 Minutos)
+## 🎤 7. Roteiro Sugerido para Apresentação Oral (5 Minutos)
 
-Se você for sorteado pelo professor, siga esta ordem cronológica de 5 etapas:
+Se você for selecionado para apresentar, siga esta ordem cronológica objetiva:
 
-1. **Passo 1: Mostrar a Capa & Palavra-Conceito (1 min)**  
-   * Exiba a capa de *Polygondwanaland*. Diga: *"A palavra-conceito é CONFINAMENTO RITUALÍSTICO. A capa retrata súditos aprisionados em celas subterrâneas, submetidos a provações hierárquicas e engrenagens de tempo por uma teocracia em busca da mística quarta cor."*
-   * Fale a frase de direção funcional: *"Escolhi esta capa porque ela retrata o confinamento ritualístico de súditos em busca da quarta cor a mando de seu governante, e por isso meu site é uma plataforma de experiências imersivas de escape room com mecânicas de ARG integradas na interface para decodificação de enigmas e liberação de acessos e descontos."*
+1. **Passo 1: A Capa & A Palavra-Conceito (1 min)**  
+   * Exiba a capa de *Polygondwanaland*. Diga: *"A palavra-conceito é CONFINAMENTO RITUALÍSTICO. A capa retrata súditos aprisionados em celas de alvenaria e engrenagens de tempo por uma teocracia em busca da quarta cor mística."*
+   * Recite a frase da régua funcional: *"Escolhi esta capa porque ela retrata o confinamento ritualístico de súditos em busca da quarta cor a mando de seu governante, e por isso meu site é uma plataforma de experiências imersivas de escape room com mecânicas de ARG integradas na interface para decodificação de enigmas e liberação de acessos e descontos."*
 
-2. **Passo 2: Mostrar o Moodboard (45s)**  
-   * Destaque 2 ou 3 achados: a arquitetura brutalista chanfrada dos monumentos Spomenik e o chiaroscuro dramático com feixes solares rasgando a escuridão.
+2. **Passo 2: O Moodboard & A Identidade Visual (1 min)**  
+   * Destaque o contraste brutalista 60-30-10: fundo mineral `#121418`, cards ardósia `#1B1F26`, vermelho carmim `#D90404` para CTAs e perigo, azul cobalto `#2175BF` e o ponto focal amarelo solar `#F2E205`.
+   * Enfatize a ausência absoluta de cantos arredondados (`rounded-none`) e sombras secas sem blur.
 
-3. **Passo 3: Mostrar a Identidade Visual (45s)**  
-   * Mostre a paleta 60-30-10: base mineral grafite `#121418`, cards ardósia `#1B1F26`, destaque amarelo solar `#F2E205` e azul cerúleo `#2175BF` para a "quarta cor" (ARG). Ressalte a regra de cantos estritamente retos (`rounded-none`) e sombras secas sem blur.
+3. **Passo 3: Navegação & Puzzles na Prática (1m30s)**  
+   * Em `/camaras`: mostre os filtros cruzados reativos e o cálculo de sobrevivência dinâmico via `computed()`. Mostre o hover reveal HUD sobre as descrições.
+   * Abra `/camaras/1` ou `/camaras/2`: demonstre a resolução do puzzle mecânico (a soma das partes do cubo = 26 ou a ressonância harmônica dos pêndulos = 12) e mostre a liberação do voucher ARG.
+   * Vá para `/iniciar`: digite um CEP válido (ex: `01001000`) para demonstrar o preenchimento automático pelo ViaCEP, mostre o cálculo de tributo com desconto ARG e mostre o botão desabilitado até preencher todos os dados válidos.
+   * Navegue até `/codex` para exibir o Léxico Hermético com os tooltips dinâmicos e o console de chaves ativas.
 
-4. **Passo 4: Navegar pela Aplicação (1m30s)**  
-   * Navegue em `/camaras`: mostre os filtros em tempo real e os contadores dinâmicos calculados por `computed()`.
-   * Abra a câmara com parâmetro de rota `/camaras/:id`: mostre o terminal ARG, digite o código de enigma (ex: `TETRA-V4` ou `CELL44`) e mostre o feedback em verde esmeralda com o voucher liberado.
-   * Vá para `/iniciar`: digite um CEP válido (ex: `01001000`) para ver o endereço ser preenchido pela API ViaCEP. Mostre o botão desabilitado até preencher os campos válidos e conclua a reserva.
-   * Digite uma URL inválida para demonstrar a página 404 temática da câmara colapsada.
-
-5. **Passo 5: Trecho de Código que se Orgulha (1 min)**  
-   * Abra [`chamber-list.component.ts`](src/app/pages/chamber-list/chamber-list.component.ts) nas linhas de `filteredChambers = computed(...)` e `averageEscapeRate = computed(...)`.
-   * **Explicação para o professor:** *"Nenhum dado derivado foi guardado em signal nem recalculado manualmente. O `computed()` reage automaticamente e de forma pura quando a lista da API, a query de busca ou o seletor de dificuldade mudam. Além disso, utilizamos 100% da nova sintaxe `@if` e `@for` com `track`, sem nenhuma diretiva legada `*ngIf` ou `*ngFor`."*
+4. **Passo 4: Demonstração do Código (1m30s)**  
+   * Abra [`chamber-list.component.ts`](src/app/pages/chamber-list/chamber-list.component.ts) e [`chamber-puzzle.component.ts`](src/app/components/chamber-puzzle/chamber-puzzle.component.ts).
+   * **Explicação para a banca:** *"O projeto utiliza 100% da sintaxe moderna do Angular 19: Signals (`signal()`), valores derivados puros (`computed()`), entradas e saídas funcionais (`input()` e `output()`), e o novo control flow `@if` e `@for` com `track`. Zero uso de diretivas legadas `*ngIf` ou `*ngFor`."*

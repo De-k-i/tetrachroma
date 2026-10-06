@@ -37,6 +37,20 @@ yarn-error.log
 testem.log
 /typings
 
-# System files
+# System & OS files
 .DS_Store
 Thumbs.db
+*.bak
+*.tmp
+*.log
+
+# Class archives and test bundles (not required for runtime/deliverables)
+*.rar
+*.tar.gz
+*.7z
+app-jwt/
+app-jwt.rar
+
+# Editor scratch & local files
+.history/
+*.orig

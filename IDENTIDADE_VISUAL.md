@@ -15,11 +15,11 @@ Este documento funciona como o contrato visual de todo o projeto. Todas as decis
 ## 2. Frase de Direção
 > **"Bem detalhado, com cores vivas, mas que ainda assim passe um clima sombrio."**
 
-*Regra de Decisão Rápida:* Se surgir dúvida entre suavizar ou endurecer um elemento, escolha sempre o corte ortogonal firme, a linha de 1px definida e o contraste nítido da luz solar amarela ou azul cobalto sobre a pedra mineral profunda.
+*Regra de Decisão Rápida:* A hierarquia cromática obedece rigorosamente à arte de capa de *Polygondwanaland* (Jason Galea): a fundação mineral de pedra escura (grafite e ardósia) ganha vida através de detalhes e molduras **predominantemente vermelhos** (o título, a borda do quadro, os estandartes e a lava), seguidos por **azuis profundos** (o lago cósmico, as cascatas e a cela) e, por fim, **pontos focais amarelos solares** (o portal solar místico e chaves radiantes).
 
 ---
 
-## 3. Paleta de Cores & Aplicação de Color Theory (Regra 60-30-10)
+## 3. Paleta de Cores & Aplicação de Color Theory (Regra de Composição Polygondwanaland)
 
 | Papel na Interface | Nome Conceitual | Hex | Proporção / Aplicação |
 | :--- | :--- | :--- | :--- |
@@ -27,10 +27,11 @@ Este documento funciona como o contrato visual de todo o projeto. Todas as decis
 | **Superfície / Containers (30%)** | Ardósia Escura | `#1B1F26` | Fundo de cards, caixas de terminal, painéis de filtros e modais, separados por bordas sólidas `#2E3542`. |
 | **Texto Principal / Leitura** | Cinza Pergaminho Claro | `#E5E7EB` | Tipografia de alta legibilidade, contraste AAA contra o fundo mineral sem fadiga ocular. |
 | **Texto Secundário / Apoio** | Cinza Fosco | `#9CA3AF` | Metadados, descrições técnicas, carimbos temporais e instruções secundárias. |
-| **Cor Primária de Ação (10%)** | Amarelo Solar | `#F2E205` | Botões principais (CTAs), rotas ativas no menu, sinalizadores de início de rito e estados ativos de foco. |
-| **Cor de Apoio / "A Quarta Cor"** | Azul Cerúleo Cobalto | `#2175BF` | Pistas de ARG, links secundários, badges de mistério e enigmas aguardando decodificação. |
-| **Cor de Alerta / Confinamento** | Vermelho Carmim | `#D90404` | Penalidades de tempo, cronômetro de confinamento, campos de formulário inválidos e erro de rede. |
-| **Cor de Sucesso / Descoberta** | Verde Esmeralda Mineral | `#10B981` | Enigma decodificado com sucesso, desconto ARG liberado, rito confirmado e resposta válida. |
+| **Destaque Predominante (Primário)** | Vermelho Carmim Sangue | `#D90404` | Acentos dominantes: moldura exterior da arte, botões principais (CTAs), rotas ativas na navegação, cabeçalhos de impacto e linhas de contenção. |
+| **Destaque Secundário (Atmosfera)** | Azul Cobalto Profundo | `#2175BF` | Botões secundários, filtros de setor, cards de masmorra, badges de mistério e linhas de fluxo. |
+| **Destaque Terciário (Ponto Focal Solar)** | Amarelo Solar Dourado | `#F2E205` | Ponto focal e luz mística: o sol central, indicadores pulsantes, ícones estelares, chaves reveladas do ARG. |
+| **A Quarta Cor / Revelação** | Verde Esmeralda Mineral | `#10B981` | Enigma decodificado com sucesso, voucher ARG ativado, rito confirmado e resposta válida. |
+
 
 ---
 
@@ -66,19 +67,34 @@ Este documento funciona como o contrato visual de todo o projeto. Todas as decis
 * **Topo / Navbar:** Logotipo brutalista `[ TETRACHROMA // 0.4 ]` com indicador luminoso pulsante em amarelo solar. Menu de navegação indicando rota ativa com borda inferior de 2px e fundo realçado.
 * **Barra de Controle & Filtros (Reativo com Signals e Computed):**
   - Campo de busca instantânea com prompt de terminal `[ BUSCAR_CAMARA: > ]`.
-  - Seletor de Dificuldade / Setor: `[ TODAS ]`, `[ CÂMARA INTERNA ]`, `[ PROVAÇÃO DE LEALDADE ]`, `[ HOROLOGIA ]`.
-  - Contador dinâmico `computed()` exibindo: `CÂMARAS ATIVAS: X / TOTAL: Y | TAXA DE LIBERAÇÃO: Z%`.
-* **Grade de Câmaras (Cards Reutilizáveis com `input()` e `output()`):**
-  - Cada card exibe código de identificação `#SEC-01`, nome do rito, nível de lealdade (estrelas/blocos de dificuldade), tempo limite de escape e badge de enigma ARG oculto.
-  - Botão de ação brutalista `[ EXAMINAR DOSSIÊ -> ]` emitindo evento de inspeção.
+  - Seletor de Dificuldade, Ciclo de Rotação (`EM OPERAÇÃO` vs `PRÓXIMO CICLO`) e Setor: `[ CÂMARA INTERNA ]`, `[ PROVAÇÃO DE LEALDADE ]`, `[ HOROLOGIA ]`, `[ CASTELO EM COLAPSO ]`.
+  - Contadores dinâmicos `computed()` exibindo: `CÂMARAS ATIVAS: X / TOTAL: Y | TAXA MÉDIA DE FUGA: Z% | PRIORITÁRIAS: W`.
+* **Grade de Câmaras Canônicas do Ciclo Polygondwanaland (Cards com `input()` e `output()`):**
+  - Cada card exibe código `#SEC-001`, nome do rito, nível de dificuldade, tempo limite de escape e tributo padronizado (R$ 110,00).
+  - Hover Reveal HUD brutalista: passar o cursor sobre a descrição revela um popover com a íntegra da narrativa e ritualística hermética.
+  - Botão de ação direta brutalista `[ DOSSIÊ COMPLETO → ]` que navega para o dossiê da sala, e botão `[ ☆ MARCAR ]` emitindo evento `(bookmarkToggle)`.
 
-### Tela 2: Dossiê da Câmara & Terminal de Decodificação ARG (`/camaras/:id`)
-* **Header da Câmara:** Código alfanumérico, classificação de perigo com borda em vermelho carmim `#D90404`, e temporizador de contagem regressiva da Horologia.
+### Tela 2: Dossiê da Câmara & Terminal de Puzzles ARG (`/camaras/:id`)
+* **Header da Câmara:** Código alfanumérico, classificação de setor, status de rotação e botão de favoritar.
 * **Painel Central Dividido em 2 Colunas:**
-  - **Coluna 1 (Dossiê Tático):** Descrição do confinamento, histórico dos súditos aprisionados, requisitos de sobrevivência e taxa de iniciação.
-  - **Coluna 2 (Terminal ARG de Decodificação Interativa):** Console monoespaçado com mensagem criptografada. Campo para submissão de código de decifração. Se correto, dispara feedback visual em verde esmeralda mineral `#10B981` e desbloqueia um voucher com código de desconto exclusivo para o agendamento presencial.
-* **Botão de Convocação:** Redireciona para o formulário de reserva em `/iniciar`, pré-preenchendo a câmara selecionada.
+  - **Coluna 1 (Dossiê Tático):** Descrição do confinamento, histórico ritualístico dos súditos, termos herméticos com tooltips interativos (`LoreTermComponent`), requisitos de contingente e botão de convocação para `/iniciar`.
+  - **Coluna 2 (Terminal ARG com 4 Puzzles Únicos):**
+    1. *Câmara 1 (Cubo do Silêncio):* Cofre de 3 dígitos com dedução da geometria do cubo (6 faces + 8 vértices + 12 arestas = 26 &rarr; `026` / `CUBE26`).
+    2. *Câmara 2 (Horologia):* Ressonância harmônica de 4 pêndulos oscilantes sincronizados por 4 manivelas de escape (12 batimentos &rarr; `TIC-TAC-12`).
+    3. *Câmara 3 (Espelho Polarizado):* Investigação no código-fonte HTML via DevTools / F12 &rarr; `LOYAL7`.
+    4. *Câmara 4 (Escadaria Tetracromática):* Alinhador óptico dos 3 prismas refratores (90°, 120°, 60°) para síntese da Quarta Cor &rarr; `TETRA-V4`.
+  - Todos os puzzles testam o conjunto completo sem muletas ou indicadores parciais de acerto. Ao resolver, emite evento `(unlocked)` e concede voucher com desconto sagrado (10% a 25%).
 
 ### Tela 3: Formulário de Iniciação & Validação de CEP (`/iniciar`)
-* Formulário com campos validados: Nome do Súdito/Líder, E-mail, Quantidade de Infiltrados (2 a 8 pessoas), Data do Rito e **CEP da Equipe/Santuário com preenchimento automático via API ViaCEP**.
-* Botão de confirmação desabilitado enquanto os campos obrigatórios não forem válidos, cumprindo o requisito técnico com rigor.
+* Formulário com campos validados: Nome do Súdito/Líder, E-mail, Quantidade de Infiltrados (2 a 8 pessoas), Turno da Horologia, Data do Rito e **CEP da Equipe/Santuário com preenchimento automático via API ViaCEP**.
+* Validação de código ARG em tempo real com cálculo dinâmico de tributo total via `computed()`.
+* Botão de confirmação rigorosamente desabilitado enquanto os campos obrigatórios não forem válidos (`bookingForm.invalid`).
+
+### Tela 4: O Codex Hermético & Léxico da Ordem (`/codex`)
+* **Manifesto Tetrachroma:** Os 4 Pilares da Iniciação e fundamentos da quarta cor.
+* **Console Central de Decodificação ARG:** Terminal de comando mestre onde todas as chaves ativas na sessão são registradas e auditadas.
+* **Léxico Hermético:** Glossário interativo categorizado (`CÂMARAS`, `MECÂNICAS`, `HIERARQUIA`, `MISTICISMO`) com busca instantânea e referências cruzadas em toda a aplicação.
+
+### Tela 5: Painel de Controle do Hierofante (`/admin`)
+* Protegido por `AuthGuard` com autenticação JWT simulada (`AuthService` + `AuthInterceptor`).
+* Métricas operacionais do santuário: total de câmaras, taxa global de sobrevivência, segredos ARG ativos no ciclo e log de auditoria em tempo real.

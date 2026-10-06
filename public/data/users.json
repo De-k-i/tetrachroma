@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "nome": "Dr. Victor Voss",
+    "email": "supervisor@tetrachroma.org",
+    "senha": "123456",
+    "role": "Admin",
+    "cargo": "Supervisor Geral dos Setores de Confinamento"
+  },
+  {
+    "id": 2,
+    "nome": "Operador Marcus",
+    "email": "operador@tetrachroma.org",
+    "senha": "123456",
+    "role": "Operador",
+    "cargo": "Técnico de Monitoramento da Horologia"
+  },
+  {
+    "id": 3,
+    "nome": "Iniciada Lyra",
+    "email": "iniciado@ordem.org",
+    "senha": "123456",
+    "role": "Operador",
+    "cargo": "Analista de Sinais e Criptografia ARG"
+  }
+]

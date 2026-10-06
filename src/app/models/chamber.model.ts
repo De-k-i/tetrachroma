@@ -2,15 +2,19 @@ export type ChamberSector = 'INNER_CELL' | 'LOYALTY' | 'HOROLOGY' | 'CRUMBLING_C
 
 export type ChamberDifficulty = 'INICIANTE' | 'PROVAÇÃO' | 'LETAL' | 'TETRACROMÁTICA';
 
+export type ChamberStatus = 'ACTIVE' | 'UPCOMING';
+
 export interface Chamber {
   id: number;
-  apiOriginalId: number;
   code: string;
   name: string;
   sector: ChamberSector;
   sectorLabel: string;
+  status: ChamberStatus;
+  rotationLabel?: string;
   difficulty: ChamberDifficulty;
   difficultyLevel: number; // 1 to 5
+  summary?: string;
   description: string;
   ritualLore: string;
   timeLimitMinutes: number;
@@ -24,8 +28,3 @@ export interface Chamber {
   isUnlocked?: boolean;
 }
 
-export interface ChamberFilter {
-  query: string;
-  sector: ChamberSector | 'ALL';
-  difficulty: ChamberDifficulty | 'ALL';
-}

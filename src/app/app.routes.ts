@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard, visitanteGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,18 @@ export const routes: Routes = [
     path: 'codex',
     loadComponent: () => import('./pages/codex/codex.component').then(m => m.CodexComponent),
     title: 'TETRACHROMA | Codex & Terminal ARG'
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent),
+    canActivate: [visitanteGuard],
+    title: 'TETRACHROMA | Autenticação & Acesso'
+  },
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent),
+    canActivate: [authGuard],
+    title: 'TETRACHROMA | Setor Administrativo'
   },
   {
     path: '**',

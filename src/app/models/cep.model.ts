@@ -12,19 +12,3 @@ export interface ViaCepResponse {
   erro?: boolean;
 }
 
-export interface BookingPayload {
-  chamberId: number;
-  chamberName: string;
-  initiateName: string;
-  email: string;
-  phone: string;
-  partySize: number;
-  ritualDate: string;
-  timeSlot: string;
-  cep: string;
-  address: string;
-  city: string;
-  state: string;
-  argDiscountCode?: string;
-  totalPrice: number;
-}

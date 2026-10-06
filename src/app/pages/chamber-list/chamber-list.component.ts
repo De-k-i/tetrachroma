@@ -1,23 +1,22 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ChamberService } from '../../services/chamber.service';
-import { Chamber, ChamberDifficulty, ChamberSector } from '../../models/chamber.model';
+import { ChamberDifficulty, ChamberSector } from '../../models/chamber.model';
 import { ChamberCardComponent } from '../../components/chamber-card/chamber-card.component';
-import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.component';
+import { LoreTermComponent } from '../../components/lore-term/lore-term.component';
 
 @Component({
   selector: 'app-chamber-list',
   standalone: true,
-  imports: [RouterLink, FormsModule, ChamberCardComponent],
+  imports: [FormsModule, ChamberCardComponent, LoreTermComponent],
   template: `
     <div class="space-y-8">
       
       <!-- Hero / Protocol Dossier Banner -->
-      <section class="bg-tetra-slate border border-tetra-border p-6 sm:p-8 shadow-hard relative overflow-hidden bg-brutalist-grid">
+      <section class="bg-tetra-slate border-2 border-tetra-border p-6 sm:p-8 shadow-hard relative bg-brutalist-grid">
         <div class="relative z-10 max-w-4xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-tetra-slate-light border border-tetra-border text-xs font-mono uppercase text-tetra-solar mb-4">
-            <span class="w-2 h-2 bg-tetra-solar"></span>
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-tetra-slate-light border border-tetra-carmine/40 text-xs font-mono uppercase text-tetra-carmine mb-4">
+            <span class="w-2 h-2 bg-tetra-carmine"></span>
             DIRETRIZ DE CONFINAMENTO RITUALÍSTICO
           </div>
 
@@ -26,15 +25,20 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
           </h1>
 
           <p class="font-mono text-sm text-tetra-muted max-w-3xl leading-relaxed mb-6">
-            Sob a vigilância do hierofante, súditos são isolados em câmaras herméticas. 
-            Decodifique os enigmas impressos nas engrenagens do tempo para alcançar a quarta cor e garantir sua sobrevivência.
+            Sob a vigilância do <app-lore-term key="hierofante">hierofante</app-lore-term>, <app-lore-term key="sudito">súditos</app-lore-term> são isolados em câmaras herméticas. 
+            Decodifique os enigmas impressos nas engrenagens da <app-lore-term key="horologia">horologia</app-lore-term> para alcançar a <app-lore-term key="tetracromacia">quarta cor</app-lore-term> e garantir sua sobrevivência.
           </p>
 
           <!-- Quick Computed Stats Ribbon -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-tetra-border font-mono text-xs">
             <div class="bg-tetra-slate-light/80 p-3 border border-tetra-border">
-              <span class="block text-tetra-muted uppercase text-[10px]">CÂMARAS ATIVAS</span>
-              <span class="text-xl font-bold text-tetra-solar">{{ totalActiveChambers() }}</span>
+              <span class="block text-tetra-muted uppercase text-[10px]">CICLO ATUAL (ATIVAS)</span>
+              <span class="text-xl font-bold text-tetra-carmine">{{ chamberService.activeChambers().length }} SALAS</span>
+            </div>
+
+            <div class="bg-tetra-slate-light/80 p-3 border border-tetra-border">
+              <span class="block text-tetra-muted uppercase text-[10px]">PRÓXIMA ROTAÇÃO</span>
+              <span class="text-xl font-bold text-tetra-solar">{{ chamberService.upcomingChambers().length }} SALAS</span>
             </div>
 
             <div class="bg-tetra-slate-light/80 p-3 border border-tetra-border">
@@ -43,20 +47,73 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
             </div>
 
             <div class="bg-tetra-slate-light/80 p-3 border border-tetra-border">
-              <span class="block text-tetra-muted uppercase text-[10px]">SANTUÁRIOS MARCADOS</span>
-              <span class="text-xl font-bold text-tetra-cobalt-light">{{ bookmarkedCount() }}</span>
-            </div>
-
-            <div class="bg-tetra-slate-light/80 p-3 border border-tetra-border">
-              <span class="block text-tetra-muted uppercase text-[10px]">SEGREDOS ARG</span>
-              <span class="text-xl font-bold text-tetra-emerald">{{ chamberService.unlockedSecrets().length }} ATIVOS</span>
+              <span class="block text-tetra-muted uppercase text-[10px]">CHAVES ARG</span>
+              <span class="text-xl font-bold text-tetra-solar">{{ chamberService.unlockedSecrets().length }} ATIVAS</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Terminal Filter Bar -->
-      <section class="bg-tetra-slate border border-tetra-border p-4 shadow-hard">
+      <!-- Terminal Filter Bar with Season Rotation Tabs -->
+      <section class="bg-tetra-slate border border-tetra-border p-4 shadow-hard space-y-4">
+        
+        <!-- Rotation Cycle Quick Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-tetra-border pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 bg-tetra-carmine"></span>
+            <span class="font-mono text-xs uppercase text-tetra-muted font-bold">ROTAÇÃO RITUALÍSTICA:</span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 font-mono text-xs">
+            <button
+              type="button"
+              (click)="selectedCycle.set('ALL')"
+              class="px-2.5 py-1 border transition-colors uppercase text-[11px]"
+              [class.bg-tetra-carmine]="selectedCycle() === 'ALL'"
+              [class.text-white]="selectedCycle() === 'ALL'"
+              [class.border-black]="selectedCycle() === 'ALL'"
+              [class.shadow-hard-sm]="selectedCycle() === 'ALL'"
+              [class.bg-tetra-graphite]="selectedCycle() !== 'ALL'"
+              [class.text-tetra-muted]="selectedCycle() !== 'ALL'"
+              [class.border-tetra-border]="selectedCycle() !== 'ALL'"
+            >
+              TODAS ({{ chamberService.chambers().length }})
+            </button>
+
+            <button
+              type="button"
+              (click)="selectedCycle.set('ACTIVE')"
+              class="px-2.5 py-1 border transition-colors uppercase text-[11px] inline-flex items-center gap-1.5"
+              [class.bg-tetra-carmine]="selectedCycle() === 'ACTIVE'"
+              [class.text-white]="selectedCycle() === 'ACTIVE'"
+              [class.border-black]="selectedCycle() === 'ACTIVE'"
+              [class.shadow-hard-sm]="selectedCycle() === 'ACTIVE'"
+              [class.bg-tetra-graphite]="selectedCycle() !== 'ACTIVE'"
+              [class.text-tetra-muted]="selectedCycle() !== 'ACTIVE'"
+              [class.border-tetra-border]="selectedCycle() !== 'ACTIVE'"
+            >
+              <span class="w-1.5 h-1.5 bg-tetra-emerald animate-pulse"></span>
+              CICLO ATUAL // EM OPERAÇÃO ({{ chamberService.activeChambers().length }})
+            </button>
+
+            <button
+              type="button"
+              (click)="selectedCycle.set('UPCOMING')"
+              class="px-2.5 py-1 border transition-colors uppercase text-[11px] inline-flex items-center gap-1.5"
+              [class.bg-tetra-carmine]="selectedCycle() === 'UPCOMING'"
+              [class.text-white]="selectedCycle() === 'UPCOMING'"
+              [class.border-black]="selectedCycle() === 'UPCOMING'"
+              [class.shadow-hard-sm]="selectedCycle() === 'UPCOMING'"
+              [class.bg-tetra-graphite]="selectedCycle() !== 'UPCOMING'"
+              [class.text-tetra-muted]="selectedCycle() !== 'UPCOMING'"
+              [class.border-tetra-border]="selectedCycle() !== 'UPCOMING'"
+            >
+              <span class="w-1.5 h-1.5 bg-tetra-solar"></span>
+              PRÓXIMO CICLO // EM PREPARAÇÃO ({{ chamberService.upcomingChambers().length }})
+            </button>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           
           <!-- Search Input -->
@@ -65,7 +122,7 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
               [ PESQUISAR_REGISTRO: ARQUIVO / CÓDIGO ]
             </label>
             <div class="relative">
-              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-tetra-solar font-mono text-sm">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-tetra-carmine font-mono text-sm">
                 >
               </span>
               <input
@@ -73,8 +130,8 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
                 type="text"
                 [ngModel]="searchQuery()"
                 (ngModelChange)="searchQuery.set($event)"
-                placeholder="Ex: CÂMARA 1, INNER CELL, HOROLOGIA..."
-                class="w-full pl-7 pr-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none placeholder:text-tetra-muted/50"
+                placeholder="Ex: CÂMARA INTERNA, HOROLOGIA, PÊNDULO..."
+                class="w-full pl-7 pr-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none placeholder:text-tetra-muted/50"
               />
             </div>
           </div>
@@ -88,7 +145,7 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
               id="sector-filter"
               [ngModel]="selectedSector()"
               (ngModelChange)="selectedSector.set($event)"
-              class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+              class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
             >
               <option value="ALL">TODOS OS SETORES</option>
               <option value="INNER_CELL">CÂMARA INTERNA (SUBTERRÂNEO)</option>
@@ -107,7 +164,7 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
               id="difficulty-filter"
               [ngModel]="selectedDifficulty()"
               (ngModelChange)="selectedDifficulty.set($event)"
-              class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+              class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
             >
               <option value="ALL">TODAS AS GRAVIDADES</option>
               <option value="INICIANTE">INICIANTE</option>
@@ -127,7 +184,7 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
           <p class="font-mono text-sm uppercase tracking-widest text-tetra-solar">
             SINCRONIZANDO COM OS ARQUIVOS DA TEOCRACIA...
           </p>
-          <span class="text-xs font-mono text-tetra-muted">Consumindo base de dados central via API</span>
+          <span class="text-xs font-mono text-tetra-muted">Acessando registros dos setores centrais</span>
         </div>
       } @else if (chamberService.error()) {
         <div class="bg-tetra-carmine/15 border-2 border-tetra-carmine p-6 shadow-hard">
@@ -157,7 +214,6 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
             <app-chamber-card 
               [chamber]="chamber"
               [isBookmarked]="isChamberBookmarked(chamber.id)"
-              (inspect)="openQuickInspect($event)"
               (bookmarkToggle)="toggleBookmark($event)"
             />
           } @empty {
@@ -171,62 +227,12 @@ import { ArgBadgeComponent } from '../../components/arg-badge/arg-badge.componen
               <button
                 type="button"
                 (click)="resetFilters()"
-                class="px-4 py-2 bg-tetra-solar text-tetra-graphite font-mono text-xs uppercase font-bold btn-brutalist shadow-hard-sm"
+                class="px-4 py-2 bg-tetra-carmine text-white font-mono text-xs uppercase font-bold btn-brutalist shadow-hard-sm hover:bg-tetra-carmine-hover transition-colors"
               >
                 LIMPAR FILTROS
               </button>
             </div>
           }
-        </div>
-      }
-
-      <!-- Quick Inspection Modal -->
-      @if (inspectingChamber()) {
-        <div class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div class="bg-tetra-slate border-2 border-tetra-solar max-w-lg w-full p-6 shadow-hard-solar">
-            <div class="flex items-center justify-between border-b border-tetra-border pb-3 mb-4">
-              <span class="font-mono text-xs uppercase text-tetra-solar font-bold">
-                [ VISUALIZAÇÃO RÁPIDA: {{ inspectingChamber()?.code }} ]
-              </span>
-              <button
-                type="button"
-                (click)="closeQuickInspect()"
-                class="text-tetra-parchment hover:text-tetra-solar font-mono text-sm"
-              >
-                [ X FECHAR ]
-              </button>
-            </div>
-
-            <h3 class="font-grotesk text-xl font-bold uppercase text-tetra-parchment mb-2">
-              {{ inspectingChamber()?.name }}
-            </h3>
-
-            <p class="font-mono text-xs text-tetra-muted mb-4 leading-relaxed">
-              {{ inspectingChamber()?.ritualLore }}
-            </p>
-
-            <div class="bg-tetra-slate-light p-3 border border-tetra-border mb-4 font-mono text-xs space-y-1">
-              <div><strong class="text-tetra-solar">PISTA ARG:</strong> {{ inspectingChamber()?.argClue }}</div>
-              <div><strong class="text-tetra-cobalt-light">TRIBUTO:</strong> R$ {{ inspectingChamber()?.pricePerInitiate?.toFixed(2) }} por súdito</div>
-            </div>
-
-            <div class="flex justify-end gap-3">
-              <button
-                type="button"
-                (click)="closeQuickInspect()"
-                class="px-3 py-1.5 font-mono text-xs uppercase border border-tetra-border text-tetra-parchment"
-              >
-                RETORNAR
-              </button>
-              <a
-                [routerLink]="['/camaras', inspectingChamber()?.id]"
-                (click)="closeQuickInspect()"
-                class="px-4 py-1.5 font-mono text-xs uppercase font-bold bg-tetra-solar text-tetra-graphite"
-              >
-                ABRIR DOSSIÊ COMPLETO &rarr;
-              </a>
-            </div>
-          </div>
         </div>
       }
 
@@ -240,7 +246,7 @@ export class ChamberListComponent implements OnInit {
   readonly searchQuery = signal<string>('');
   readonly selectedSector = signal<'ALL' | ChamberSector>('ALL');
   readonly selectedDifficulty = signal<'ALL' | ChamberDifficulty>('ALL');
-  readonly inspectingChamberId = signal<number | null>(null);
+  readonly selectedCycle = signal<'ALL' | 'ACTIVE' | 'UPCOMING'>('ALL');
 
   // Computeds cumprindo rigorosamente os critérios técnicos:
   // 1. Filtragem avançada cruzada
@@ -249,6 +255,7 @@ export class ChamberListComponent implements OnInit {
     const query = this.searchQuery().trim().toLowerCase();
     const sector = this.selectedSector();
     const difficulty = this.selectedDifficulty();
+    const cycle = this.selectedCycle();
 
     return list.filter(chamber => {
       const matchesQuery = !query || 
@@ -258,8 +265,9 @@ export class ChamberListComponent implements OnInit {
 
       const matchesSector = sector === 'ALL' || chamber.sector === sector;
       const matchesDifficulty = difficulty === 'ALL' || chamber.difficulty === difficulty;
+      const matchesCycle = cycle === 'ALL' || chamber.status === cycle;
 
-      return matchesQuery && matchesSector && matchesDifficulty;
+      return matchesQuery && matchesSector && matchesDifficulty && matchesCycle;
     });
   });
 
@@ -281,13 +289,6 @@ export class ChamberListComponent implements OnInit {
     return this.chamberService.bookmarkedChamberIds().length;
   });
 
-  // 5. Objeto da câmara em inspeção rápida
-  readonly inspectingChamber = computed(() => {
-    const id = this.inspectingChamberId();
-    if (!id) return null;
-    return this.chamberService.chambers().find(c => c.id === id) ?? null;
-  });
-
   ngOnInit(): void {
     if (this.chamberService.chambers().length === 0) {
       this.chamberService.loadChambers();
@@ -302,18 +303,11 @@ export class ChamberListComponent implements OnInit {
     this.chamberService.toggleBookmark(id);
   }
 
-  openQuickInspect(id: number): void {
-    this.inspectingChamberId.set(id);
-  }
-
-  closeQuickInspect(): void {
-    this.inspectingChamberId.set(null);
-  }
-
   resetFilters(): void {
     this.searchQuery.set('');
     this.selectedSector.set('ALL');
     this.selectedDifficulty.set('ALL');
+    this.selectedCycle.set('ALL');
   }
 
   retrySync(): void {

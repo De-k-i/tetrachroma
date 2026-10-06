@@ -4,18 +4,19 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChamberService } from '../../services/chamber.service';
 import { CepService } from '../../services/cep.service';
 import { Chamber } from '../../models/chamber.model';
+import { LoreTermComponent } from '../../components/lore-term/lore-term.component';
 
 @Component({
   selector: 'app-booking',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, LoreTermComponent],
   template: `
     <div class="max-w-4xl mx-auto space-y-8">
       
       <!-- Header -->
       <section class="bg-tetra-slate border border-tetra-border p-6 sm:p-8 shadow-hard bg-brutalist-grid">
-        <div class="inline-flex items-center gap-2 px-3 py-1 bg-tetra-slate-light border border-tetra-border text-xs font-mono uppercase text-tetra-solar mb-3">
-          <span class="w-2 h-2 bg-tetra-solar"></span>
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-tetra-slate-light border border-tetra-carmine/40 text-xs font-mono uppercase text-tetra-carmine mb-3">
+          <span class="w-2 h-2 bg-tetra-carmine"></span>
           PROTOCOLO DE CONVOCAÇÃO RITUALÍSTICA
         </div>
 
@@ -24,7 +25,7 @@ import { Chamber } from '../../models/chamber.model';
         </h1>
 
         <p class="font-mono text-xs text-tetra-muted max-w-2xl leading-relaxed">
-          Preencha o manifesto de convocação para submeter sua equipe ao julgamento da Horologia. 
+          Preencha o manifesto de convocação para submeter sua equipe ao julgamento da <app-lore-term key="horologia">Horologia</app-lore-term>. 
           Informe o CEP do santuário/líder para consulta oracular instantânea.
         </p>
       </section>
@@ -41,7 +42,7 @@ import { Chamber } from '../../models/chamber.model';
           </h2>
 
           <div class="bg-tetra-slate-light border border-tetra-border p-5 max-w-lg mx-auto text-left font-mono text-xs space-y-2">
-            <div><strong class="text-tetra-solar">PROTOCOLO Nº:</strong> #TC-{{ confirmationCode() }}</div>
+            <div><strong class="text-tetra-carmine">PROTOCOLO Nº:</strong> #TC-{{ confirmationCode() }}</div>
             <div><strong class="text-tetra-muted">LÍDER INICIADO:</strong> {{ bookingForm.value.initiateName }}</div>
             <div><strong class="text-tetra-muted">SANTUÁRIO / CÂMARA:</strong> {{ selectedChamber()?.name }}</div>
             <div><strong class="text-tetra-muted">DATA & HORÁRIO:</strong> {{ bookingForm.value.ritualDate }} às {{ bookingForm.value.timeSlot }}</div>
@@ -92,16 +93,35 @@ import { Chamber } from '../../models/chamber.model';
             <select
               id="chamber-select"
               formControlName="chamberId"
-              class="w-full px-3 py-2.5 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+              class="w-full px-3 py-2.5 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
               [class.border-tetra-carmine]="isFieldInvalid('chamberId')"
             >
-              <option value="" disabled>-- ESCOLHA UMA CÂMARA --</option>
-              @for (chamber of chamberService.chambers(); track chamber.id) {
-                <option [value]="chamber.id">
-                  {{ chamber.code }} // {{ chamber.name }} - R$ {{ chamber.pricePerInitiate.toFixed(2) }}
-                </option>
-              }
+              <option value="" disabled>-- ESCOLHA UMA CÂMARA DE PROVAÇÃO --</option>
+              
+              <optgroup label="CICLO ATUAL // EM OPERAÇÃO (DISPONÍVEL AGORA)">
+                @for (chamber of chamberService.activeChambers(); track chamber.id) {
+                  <option [value]="chamber.id">
+                    {{ chamber.code }} // {{ chamber.name }} — R$ {{ chamber.pricePerInitiate.toFixed(2) }} / pessoa
+                  </option>
+                }
+              </optgroup>
+
+              <optgroup label="PRÓXIMA ROTAÇÃO // RESERVA ANTECIPADA">
+                @for (chamber of chamberService.upcomingChambers(); track chamber.id) {
+                  <option [value]="chamber.id">
+                    {{ chamber.code }} // {{ chamber.name }} [EM PREPARAÇÃO] — R$ {{ chamber.pricePerInitiate.toFixed(2) }} / pessoa
+                  </option>
+                }
+              </optgroup>
             </select>
+
+            @if (selectedChamber()?.status === 'UPCOMING') {
+              <div class="mt-2 p-2.5 bg-tetra-solar/10 border border-tetra-solar/40 font-mono text-[11px] text-tetra-solar flex items-center gap-2">
+                <span class="w-2 h-2 bg-tetra-solar"></span>
+                <span>AVISO RITUALÍSTICO: Esta câmara pertence ao próximo ciclo ({{ selectedChamber()?.rotationLabel }}). Sua reserva garante vaga prioritária de estreia.</span>
+              </div>
+            }
+
             @if (isFieldInvalid('chamberId')) {
               <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
                 * A seleção de uma câmara é mandatória.
@@ -113,14 +133,14 @@ import { Chamber } from '../../models/chamber.model';
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label for="initiate-name" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
-                NOME DO SÚDITO LÍDER *
+                NOME DO <app-lore-term key="sudito">SÚDITO</app-lore-term> LÍDER *
               </label>
               <input
                 id="initiate-name"
                 type="text"
                 formControlName="initiateName"
                 placeholder="Ex: Marcus de Tetrachroma"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
                 [class.border-tetra-carmine]="isFieldInvalid('initiateName')"
               />
               @if (isFieldInvalid('initiateName')) {
@@ -139,7 +159,7 @@ import { Chamber } from '../../models/chamber.model';
                 type="email"
                 formControlName="email"
                 placeholder="iniciado@ordem.org"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
                 [class.border-tetra-carmine]="isFieldInvalid('email')"
               />
               @if (isFieldInvalid('email')) {
@@ -158,7 +178,7 @@ import { Chamber } from '../../models/chamber.model';
                 type="text"
                 formControlName="phone"
                 placeholder="(00) 90000-0000"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
                 [class.border-tetra-carmine]="isFieldInvalid('phone')"
               />
               @if (isFieldInvalid('phone')) {
@@ -178,7 +198,7 @@ import { Chamber } from '../../models/chamber.model';
                 min="2"
                 max="8"
                 formControlName="partySize"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
                 [class.border-tetra-carmine]="isFieldInvalid('partySize')"
               />
               @if (isFieldInvalid('partySize')) {
@@ -199,7 +219,7 @@ import { Chamber } from '../../models/chamber.model';
                 id="ritual-date"
                 type="date"
                 formControlName="ritualDate"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
                 [class.border-tetra-carmine]="isFieldInvalid('ritualDate')"
               />
               @if (isFieldInvalid('ritualDate')) {
@@ -216,7 +236,7 @@ import { Chamber } from '../../models/chamber.model';
               <select
                 id="time-slot"
                 formControlName="timeSlot"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
                 [class.border-tetra-carmine]="isFieldInvalid('timeSlot')"
               >
                 <option value="" disabled>-- SELECIONE O HORÁRIO --</option>
@@ -238,9 +258,9 @@ import { Chamber } from '../../models/chamber.model';
             <div class="flex items-center justify-between border-b border-tetra-border pb-2">
               <span class="text-xs font-mono uppercase text-tetra-cobalt-light font-bold flex items-center gap-2">
                 <span class="w-2 h-2 bg-tetra-cobalt"></span>
-                LOCALIZAÇÃO DO SANTUÁRIO // CONSULTA VIACEP
+                LOCALIZAÇÃO DO SANTUÁRIO // ENDEREÇO & CEP
               </span>
-              <span class="text-[10px] font-mono text-tetra-muted">API PÚBLICA INTEGRADA</span>
+              <span class="text-[10px] font-mono text-tetra-muted">BUSCA AUTOMÁTICA</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -288,7 +308,7 @@ import { Chamber } from '../../models/chamber.model';
                   type="text"
                   formControlName="address"
                   placeholder="Preenchido automaticamente pelo CEP..."
-                  class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-solar rounded-none"
+                  class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
                   [class.border-tetra-carmine]="isFieldInvalid('address')"
                 />
               </div>
@@ -326,14 +346,14 @@ import { Chamber } from '../../models/chamber.model';
           <!-- ARG Code Discount Input -->
           <div class="p-4 bg-tetra-slate-light border border-tetra-border space-y-3">
             <label for="arg-code" class="block text-xs font-mono uppercase text-tetra-emerald font-bold">
-              [ POSSUI CÓDIGO ARG DESTRANCADO? ]
+              [ POSSUI CÓDIGO <app-lore-term key="arg">ARG</app-lore-term> DESTRANCADO? ]
             </label>
             <div class="flex gap-2">
               <input
                 id="arg-code"
                 type="text"
                 formControlName="argCode"
-                placeholder="Ex: TETRA-V4, CELL44, LOYAL7..."
+                placeholder="DIGITE O CÓDIGO ARG DA CÂMARA..."
                 class="flex-1 px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs uppercase focus:outline-none focus:border-tetra-emerald rounded-none"
               />
               <button
@@ -361,7 +381,7 @@ import { Chamber } from '../../models/chamber.model';
             <div>
               <span class="block text-[10px] font-mono uppercase text-tetra-muted">TRIBUTO FINAL CALCULADO</span>
               <div class="flex items-baseline gap-2">
-                <span class="font-grotesk text-3xl font-bold text-tetra-solar">
+                <span class="font-grotesk text-3xl font-bold text-tetra-parchment">
                   R$ {{ finalPrice().toFixed(2) }}
                 </span>
                 @if (appliedDiscount() > 0) {
@@ -376,7 +396,7 @@ import { Chamber } from '../../models/chamber.model';
             <button
               type="submit"
               [disabled]="bookingForm.invalid || isSubmitting()"
-              class="w-full sm:w-auto px-8 py-3.5 bg-tetra-solar text-tetra-graphite font-mono text-xs uppercase font-bold hover:bg-tetra-solar-hover border border-tetra-solar btn-brutalist shadow-hard disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+              class="w-full sm:w-auto px-8 py-3.5 bg-tetra-carmine text-white font-mono text-xs uppercase font-bold hover:bg-tetra-carmine-hover border border-black btn-brutalist shadow-hard disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all"
             >
               @if (isSubmitting()) {
                 ENVIANDO MANIFESTO...
@@ -452,7 +472,7 @@ export class BookingComponent implements OnInit {
       this.chamberService.loadChambers();
     }
 
-    // Captura parâmetros de rota (ex: /iniciar?chamberId=3&code=CELL44)
+    // Captura parâmetros de rota (ex: /iniciar?chamberId=1&code=CUBE26)
     this.route.queryParams.subscribe(params => {
       if (params['chamberId']) {
         this.bookingForm.patchValue({ chamberId: params['chamberId'] });
