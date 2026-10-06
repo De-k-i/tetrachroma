@@ -105,25 +105,3 @@ npm run build
 ```
 
 ---
-
-## 🎤 7. Roteiro Sugerido para Apresentação Oral (5 Minutos)
-
-Se você for selecionado para apresentar, siga esta ordem cronológica objetiva:
-
-1. **Passo 1: A Capa & A Palavra-Conceito (1 min)**  
-   * Exiba a capa de *Polygondwanaland*. Diga: *"A palavra-conceito é CONFINAMENTO RITUALÍSTICO. A capa retrata súditos aprisionados em celas de alvenaria e engrenagens de tempo por uma teocracia em busca da quarta cor mística."*
-   * Recite a frase da régua funcional: *"Escolhi esta capa porque ela retrata o confinamento ritualístico de súditos em busca da quarta cor a mando de seu governante, e por isso meu site é uma plataforma de experiências imersivas de escape room com mecânicas de ARG integradas na interface para decodificação de enigmas e liberação de acessos e descontos."*
-
-2. **Passo 2: O Moodboard & A Identidade Visual (1 min)**  
-   * Destaque o contraste brutalista 60-30-10: fundo mineral `#121418`, cards ardósia `#1B1F26`, vermelho carmim `#D90404` para CTAs e perigo, azul cobalto `#2175BF` e o ponto focal amarelo solar `#F2E205`.
-   * Enfatize a ausência absoluta de cantos arredondados (`rounded-none`) e sombras secas sem blur.
-
-3. **Passo 3: Navegação & Puzzles na Prática (1m30s)**  
-   * Em `/camaras`: mostre os filtros cruzados reativos e o cálculo de sobrevivência dinâmico via `computed()`. Mostre o hover reveal HUD sobre as descrições.
-   * Abra `/camaras/1` ou `/camaras/2`: demonstre a resolução do puzzle mecânico (a soma das partes do cubo = 26 ou a ressonância harmônica dos pêndulos = 12) e mostre a liberação do voucher ARG.
-   * Vá para `/iniciar`: digite um CEP válido (ex: `01001000`) para demonstrar o preenchimento automático pelo ViaCEP, mostre o cálculo de tributo com desconto ARG e mostre o botão desabilitado até preencher todos os dados válidos.
-   * Navegue até `/codex` para exibir o Léxico Hermético com os tooltips dinâmicos e o console de chaves ativas.
-
-4. **Passo 4: Demonstração do Código (1m30s)**  
-   * Abra [`chamber-list.component.ts`](src/app/pages/chamber-list/chamber-list.component.ts) e [`chamber-puzzle.component.ts`](src/app/components/chamber-puzzle/chamber-puzzle.component.ts).
-   * **Explicação para a banca:** *"O projeto utiliza 100% da sintaxe moderna do Angular 19: Signals (`signal()`), valores derivados puros (`computed()`), entradas e saídas funcionais (`input()` e `output()`), e o novo control flow `@if` e `@for` com `track`. Zero uso de diretivas legadas `*ngIf` ou `*ngFor`."*
