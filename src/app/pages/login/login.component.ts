@@ -10,7 +10,7 @@ type AuthMode = 'LOGIN' | 'REGISTER';
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
   template: `
-    <div class="max-w-md mx-auto my-8 font-mono">
+    <div class="max-w-md mx-auto font-mono">
       
       <!-- Terminal Header / Protocol Banner -->
       <div class="bg-tetra-slate border-2 border-tetra-border p-6 shadow-hard-lg">

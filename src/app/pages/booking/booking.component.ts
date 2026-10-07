@@ -11,7 +11,7 @@ import { LoreTermComponent } from '../../components/lore-term/lore-term.componen
   standalone: true,
   imports: [RouterLink, ReactiveFormsModule, LoreTermComponent],
   template: `
-    <div class="max-w-4xl mx-auto space-y-8">
+    <div class="space-y-8">
       
       <!-- Header -->
       <section class="bg-tetra-slate border border-tetra-border p-6 sm:p-8 shadow-hard bg-brutalist-grid">
@@ -20,11 +20,11 @@ import { LoreTermComponent } from '../../components/lore-term/lore-term.componen
           PROTOCOLO DE CONVOCAÇÃO RITUALÍSTICA
         </div>
 
-        <h1 class="font-grotesk text-3xl sm:text-4xl font-bold uppercase tracking-tight text-tetra-parchment mb-2">
+        <h1 class="font-grotesk text-3xl sm:text-5xl font-bold uppercase tracking-tight text-tetra-parchment mb-2">
           INICIAÇÃO & RESERVA DE CÂMARA
         </h1>
 
-        <p class="font-mono text-xs text-tetra-muted max-w-2xl leading-relaxed">
+        <p class="font-mono text-xs sm:text-sm text-tetra-muted max-w-3xl leading-relaxed">
           Preencha o manifesto de convocação para submeter sua equipe ao julgamento da <app-lore-term key="horologia">Horologia</app-lore-term>. 
           Informe o CEP do santuário/líder para consulta oracular instantânea.
         </p>
@@ -32,7 +32,7 @@ import { LoreTermComponent } from '../../components/lore-term/lore-term.componen
 
       @if (bookingConfirmed()) {
         <!-- Ritual Confirmation Screen -->
-        <section class="bg-tetra-slate border-2 border-tetra-emerald p-8 shadow-hard text-center space-y-5">
+        <section class="bg-tetra-slate border-2 border-tetra-emerald p-8 shadow-hard text-center space-y-5 max-w-2xl mx-auto">
           <div class="inline-flex items-center justify-center w-16 h-16 bg-tetra-emerald/20 border-2 border-tetra-emerald text-tetra-emerald text-3xl font-mono">
             ✓
           </div>
@@ -82,335 +82,410 @@ import { LoreTermComponent } from '../../components/lore-term/lore-term.componen
         </section>
       } @else {
 
-        <!-- Booking Reactive Form -->
-        <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="bg-tetra-slate border border-tetra-border p-6 sm:p-8 shadow-hard space-y-6">
+        <!-- Booking Reactive Form Layout (12-Column Responsive Grid) -->
+        <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          <!-- Chamber Selection -->
-          <div>
-            <label for="chamber-select" class="block text-xs font-mono uppercase text-tetra-solar mb-1 font-bold">
-              [ 1. SELECIONE A CÂMARA DE PROVAÇÃO * ]
-            </label>
-            <select
-              id="chamber-select"
-              formControlName="chamberId"
-              class="w-full px-3 py-2.5 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-              [class.border-tetra-carmine]="isFieldInvalid('chamberId')"
-            >
-              <option value="" disabled>-- ESCOLHA UMA CÂMARA DE PROVAÇÃO --</option>
-              
-              <optgroup label="CICLO ATUAL // EM OPERAÇÃO (DISPONÍVEL AGORA)">
-                @for (chamber of chamberService.activeChambers(); track chamber.id) {
-                  <option [value]="chamber.id">
-                    {{ chamber.code }} // {{ chamber.name }} — R$ {{ chamber.pricePerInitiate.toFixed(2) }} / pessoa
-                  </option>
-                }
-              </optgroup>
-
-              <optgroup label="PRÓXIMA ROTAÇÃO // RESERVA ANTECIPADA">
-                @for (chamber of chamberService.upcomingChambers(); track chamber.id) {
-                  <option [value]="chamber.id">
-                    {{ chamber.code }} // {{ chamber.name }} [EM PREPARAÇÃO] — R$ {{ chamber.pricePerInitiate.toFixed(2) }} / pessoa
-                  </option>
-                }
-              </optgroup>
-            </select>
-
-            @if (selectedChamber()?.status === 'UPCOMING') {
-              <div class="mt-2 p-2.5 bg-tetra-solar/10 border border-tetra-solar/40 font-mono text-[11px] text-tetra-solar flex items-center gap-2">
-                <span class="w-2 h-2 bg-tetra-solar"></span>
-                <span>AVISO RITUALÍSTICO: Esta câmara pertence ao próximo ciclo ({{ selectedChamber()?.rotationLabel }}). Sua reserva garante vaga prioritária de estreia.</span>
-              </div>
-            }
-
-            @if (isFieldInvalid('chamberId')) {
-              <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                * A seleção de uma câmara é mandatória.
-              </span>
-            }
-          </div>
-
-          <!-- Initiator Info Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Left Column: Form Inputs (8 Columns) -->
+          <div class="lg:col-span-8 bg-tetra-slate border border-tetra-border p-6 sm:p-8 shadow-hard space-y-6">
+            
+            <!-- Chamber Selection -->
             <div>
-              <label for="initiate-name" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
-                NOME DO <app-lore-term key="sudito">SÚDITO</app-lore-term> LÍDER *
-              </label>
-              <input
-                id="initiate-name"
-                type="text"
-                formControlName="initiateName"
-                placeholder="Ex: Marcus de Tetrachroma"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-                [class.border-tetra-carmine]="isFieldInvalid('initiateName')"
-              />
-              @if (isFieldInvalid('initiateName')) {
-                <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                  * Mínimo de 3 caracteres obrigatório.
-                </span>
-              }
-            </div>
-
-            <div>
-              <label for="initiate-email" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
-                E-MAIL PARA TRANSMISSÃO *
-              </label>
-              <input
-                id="initiate-email"
-                type="email"
-                formControlName="email"
-                placeholder="iniciado@ordem.org"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-                [class.border-tetra-carmine]="isFieldInvalid('email')"
-              />
-              @if (isFieldInvalid('email')) {
-                <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                  * Informe um endereço de e-mail válido.
-                </span>
-              }
-            </div>
-
-            <div>
-              <label for="initiate-phone" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
-                COMUNICADOR / TELEFONE *
-              </label>
-              <input
-                id="initiate-phone"
-                type="text"
-                formControlName="phone"
-                placeholder="(00) 90000-0000"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-                [class.border-tetra-carmine]="isFieldInvalid('phone')"
-              />
-              @if (isFieldInvalid('phone')) {
-                <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                  * Telefone de contato obrigatório.
-                </span>
-              }
-            </div>
-
-            <div>
-              <label for="party-size" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
-                TAMANHO DA EQUIPE (2 A 8 INICIADOS) *
-              </label>
-              <input
-                id="party-size"
-                type="number"
-                min="2"
-                max="8"
-                formControlName="partySize"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-                [class.border-tetra-carmine]="isFieldInvalid('partySize')"
-              />
-              @if (isFieldInvalid('partySize')) {
-                <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                  * O contingente deve ter entre 2 e 8 membros.
-                </span>
-              }
-            </div>
-          </div>
-
-          <!-- Date & Time Slot -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label for="ritual-date" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
-                DATA DO RITO *
-              </label>
-              <input
-                id="ritual-date"
-                type="date"
-                formControlName="ritualDate"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-                [class.border-tetra-carmine]="isFieldInvalid('ritualDate')"
-              />
-              @if (isFieldInvalid('ritualDate')) {
-                <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                  * Data do rito é obrigatória.
-                </span>
-              }
-            </div>
-
-            <div>
-              <label for="time-slot" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
-                TURNO DA HOROLOGIA *
+              <label for="chamber-select" class="block text-xs font-mono uppercase text-tetra-solar mb-1 font-bold">
+                [ 1. SELECIONE A CÂMARA DE PROVAÇÃO * ]
               </label>
               <select
-                id="time-slot"
-                formControlName="timeSlot"
-                class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-                [class.border-tetra-carmine]="isFieldInvalid('timeSlot')"
+                id="chamber-select"
+                formControlName="chamberId"
+                class="w-full px-3 py-2.5 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                [class.border-tetra-carmine]="isFieldInvalid('chamberId')"
               >
-                <option value="" disabled>-- SELECIONE O HORÁRIO --</option>
-                <option value="14:00">14:00 - ABERTURA DOS PORTÕES</option>
-                <option value="16:00">16:00 - JULGAMENTO DA TARDE</option>
-                <option value="18:30">18:30 - CREPÚSCULO DE COBALTO</option>
-                <option value="20:30">20:30 - VIGÍLIA DA QUARTA COR</option>
+                <option value="" disabled>-- ESCOLHA UMA CÂMARA DE PROVAÇÃO --</option>
+                
+                <optgroup label="CICLO ATUAL // EM OPERAÇÃO (DISPONÍVEL AGORA)">
+                  @for (chamber of chamberService.activeChambers(); track chamber.id) {
+                    <option [value]="chamber.id">
+                      {{ chamber.code }} // {{ chamber.name }} — R$ {{ chamber.pricePerInitiate.toFixed(2) }} / pessoa
+                    </option>
+                  }
+                </optgroup>
+
+                <optgroup label="PRÓXIMA ROTAÇÃO // RESERVA ANTECIPADA">
+                  @for (chamber of chamberService.upcomingChambers(); track chamber.id) {
+                    <option [value]="chamber.id">
+                      {{ chamber.code }} // {{ chamber.name }} [EM PREPARAÇÃO] — R$ {{ chamber.pricePerInitiate.toFixed(2) }} / pessoa
+                    </option>
+                  }
+                </optgroup>
               </select>
-              @if (isFieldInvalid('timeSlot')) {
-                <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                  * Escolha o turno da prova.
-                </span>
-              }
-            </div>
-          </div>
 
-          <!-- ViaCEP Public API Section -->
-          <div class="p-4 bg-tetra-slate-light border border-tetra-border space-y-4">
-            <div class="flex items-center justify-between border-b border-tetra-border pb-2">
-              <span class="text-xs font-mono uppercase text-tetra-cobalt-light font-bold flex items-center gap-2">
-                <span class="w-2 h-2 bg-tetra-cobalt"></span>
-                LOCALIZAÇÃO DO SANTUÁRIO // ENDEREÇO & CEP
-              </span>
-              <span class="text-[10px] font-mono text-tetra-muted">BUSCA AUTOMÁTICA</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label for="cep-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
-                  CEP (8 DÍGITOS) *
-                </label>
-                <div class="flex gap-2">
-                  <input
-                    id="cep-input"
-                    type="text"
-                    formControlName="cep"
-                    placeholder="01001000"
-                    maxlength="9"
-                    (blur)="onCepBlur()"
-                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-cobalt rounded-none"
-                    [class.border-tetra-carmine]="isFieldInvalid('cep')"
-                  />
-                  <button
-                    type="button"
-                    (click)="onCepBlur()"
-                    [disabled]="isSearchingCep()"
-                    class="px-3 py-2 bg-tetra-cobalt text-white font-mono text-xs uppercase font-bold hover:bg-tetra-cobalt-light btn-brutalist disabled:opacity-50"
-                  >
-                    @if (isSearchingCep()) {
-                      ...
-                    } @else {
-                      BUSCAR
-                    }
-                  </button>
+              @if (selectedChamber()?.status === 'UPCOMING') {
+                <div class="mt-2 p-2.5 bg-tetra-solar/10 border border-tetra-solar/40 font-mono text-[11px] text-tetra-solar flex items-center gap-2">
+                  <span class="w-2 h-2 bg-tetra-solar"></span>
+                  <span>AVISO RITUALÍSTICO: Esta câmara pertence ao próximo ciclo ({{ selectedChamber()?.rotationLabel }}). Sua reserva garante vaga prioritária de estreia.</span>
                 </div>
-                @if (cepError()) {
-                  <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
-                    {{ cepError() }}
-                  </span>
-                }
-              </div>
-
-              <div class="sm:col-span-2">
-                <label for="address-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
-                  LOGRADOURO / ENDEREÇO *
-                </label>
-                <input
-                  id="address-input"
-                  type="text"
-                  formControlName="address"
-                  placeholder="Preenchido automaticamente pelo CEP..."
-                  class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
-                  [class.border-tetra-carmine]="isFieldInvalid('address')"
-                />
-              </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label for="city-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
-                  CIDADE *
-                </label>
-                <input
-                  id="city-input"
-                  type="text"
-                  formControlName="city"
-                  placeholder="Cidade"
-                  class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs rounded-none"
-                />
-              </div>
-
-              <div>
-                <label for="state-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
-                  ESTADO (UF) *
-                </label>
-                <input
-                  id="state-input"
-                  type="text"
-                  formControlName="state"
-                  placeholder="UF"
-                  class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs rounded-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- ARG Code Discount Input -->
-          <div class="p-4 bg-tetra-slate-light border border-tetra-border space-y-3">
-            <label for="arg-code" class="block text-xs font-mono uppercase text-tetra-emerald font-bold">
-              [ POSSUI CÓDIGO <app-lore-term key="arg">ARG</app-lore-term> DESTRANCADO? ]
-            </label>
-            <div class="flex gap-2">
-              <input
-                id="arg-code"
-                type="text"
-                formControlName="argCode"
-                placeholder="DIGITE O CÓDIGO ARG DA CÂMARA..."
-                class="flex-1 px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs uppercase focus:outline-none focus:border-tetra-emerald rounded-none"
-              />
-              <button
-                type="button"
-                (click)="applyArgDiscount()"
-                class="px-4 py-2 bg-tetra-emerald text-tetra-graphite font-mono text-xs uppercase font-bold hover:bg-emerald-400 btn-brutalist"
-              >
-                VALIDAR CÓDIGO
-              </button>
-            </div>
-
-            @if (argFeedback()) {
-              <p 
-                class="font-mono text-xs"
-                [class.text-tetra-emerald]="appliedDiscount() > 0"
-                [class.text-tetra-carmine]="appliedDiscount() === 0"
-              >
-                {{ argFeedback() }}
-              </p>
-            }
-          </div>
-
-          <!-- Price Summary & Submission Bar -->
-          <div class="border-t border-tetra-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <span class="block text-[10px] font-mono uppercase text-tetra-muted">TRIBUTO FINAL CALCULADO</span>
-              <div class="flex items-baseline gap-2">
-                <span class="font-grotesk text-3xl font-bold text-tetra-parchment">
-                  R$ {{ finalPrice().toFixed(2) }}
-                </span>
-                @if (appliedDiscount() > 0) {
-                  <span class="font-mono text-xs text-tetra-emerald uppercase font-bold">
-                    (-{{ appliedDiscount() }}% ARG APLICADO)
-                  </span>
-                }
-              </div>
-            </div>
-
-            <!-- Submit Button Strictly Disabled While Form is Invalid -->
-            <button
-              type="submit"
-              [disabled]="bookingForm.invalid || isSubmitting()"
-              class="w-full sm:w-auto px-8 py-3.5 bg-tetra-carmine text-white font-mono text-xs uppercase font-bold hover:bg-tetra-carmine-hover border border-black btn-brutalist shadow-hard disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all"
-            >
-              @if (isSubmitting()) {
-                ENVIANDO MANIFESTO...
-              } @else {
-                CONFIRMAR RITO DE INICIAÇÃO &rarr;
               }
-            </button>
+
+              @if (isFieldInvalid('chamberId')) {
+                <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                  * A seleção de uma câmara é mandatória.
+                </span>
+              }
+            </div>
+
+            <!-- Initiator Info Grid -->
+            <div>
+              <span class="block text-xs font-mono uppercase text-tetra-muted mb-2 font-bold">
+                [ 2. DADOS DO SÚDITO & CONTINGENTE ]
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="initiate-name" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
+                    NOME DO <app-lore-term key="sudito">SÚDITO</app-lore-term> LÍDER *
+                  </label>
+                  <input
+                    id="initiate-name"
+                    type="text"
+                    formControlName="initiateName"
+                    placeholder="Ex: Marcus de Tetrachroma"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                    [class.border-tetra-carmine]="isFieldInvalid('initiateName')"
+                  />
+                  @if (isFieldInvalid('initiateName')) {
+                    <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                      * Mínimo de 3 caracteres obrigatório.
+                    </span>
+                  }
+                </div>
+
+                <div>
+                  <label for="initiate-email" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
+                    E-MAIL PARA TRANSMISSÃO *
+                  </label>
+                  <input
+                    id="initiate-email"
+                    type="email"
+                    formControlName="email"
+                    placeholder="iniciado@ordem.org"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                    [class.border-tetra-carmine]="isFieldInvalid('email')"
+                  />
+                  @if (isFieldInvalid('email')) {
+                    <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                      * Informe um endereço de e-mail válido.
+                    </span>
+                  }
+                </div>
+
+                <div>
+                  <label for="initiate-phone" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
+                    COMUNICADOR / TELEFONE *
+                  </label>
+                  <input
+                    id="initiate-phone"
+                    type="text"
+                    formControlName="phone"
+                    placeholder="(00) 90000-0000"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                    [class.border-tetra-carmine]="isFieldInvalid('phone')"
+                  />
+                  @if (isFieldInvalid('phone')) {
+                    <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                      * Telefone de contato obrigatório.
+                    </span>
+                  }
+                </div>
+
+                <div>
+                  <label for="party-size" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
+                    TAMANHO DA EQUIPE (2 A 8 INICIADOS) *
+                  </label>
+                  <input
+                    id="party-size"
+                    type="number"
+                    min="2"
+                    max="8"
+                    formControlName="partySize"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                    [class.border-tetra-carmine]="isFieldInvalid('partySize')"
+                  />
+                  @if (isFieldInvalid('partySize')) {
+                    <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                      * O contingente deve ter entre 2 e 8 membros.
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Date & Time Slot -->
+            <div>
+              <span class="block text-xs font-mono uppercase text-tetra-muted mb-2 font-bold">
+                [ 3. CRONOGRAMA DA PROVAÇÃO ]
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="ritual-date" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
+                    DATA DO RITO *
+                  </label>
+                  <input
+                    id="ritual-date"
+                    type="date"
+                    formControlName="ritualDate"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                    [class.border-tetra-carmine]="isFieldInvalid('ritualDate')"
+                  />
+                  @if (isFieldInvalid('ritualDate')) {
+                    <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                      * Data do rito é obrigatória.
+                    </span>
+                  }
+                </div>
+
+                <div>
+                  <label for="time-slot" class="block text-xs font-mono uppercase text-tetra-muted mb-1">
+                    TURNO DA HOROLOGIA *
+                  </label>
+                  <select
+                    id="time-slot"
+                    formControlName="timeSlot"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                    [class.border-tetra-carmine]="isFieldInvalid('timeSlot')"
+                  >
+                    <option value="" disabled>-- SELECIONE O HORÁRIO --</option>
+                    <option value="14:00">14:00 - ABERTURA DOS PORTÕES</option>
+                    <option value="16:00">16:00 - JULGAMENTO DA TARDE</option>
+                    <option value="18:30">18:30 - CREPÚSCULO DE COBALTO</option>
+                    <option value="20:30">20:30 - VIGÍLIA DA QUARTA COR</option>
+                  </select>
+                  @if (isFieldInvalid('timeSlot')) {
+                    <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                      * Escolha o turno da prova.
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- ViaCEP Public API Section -->
+            <div class="p-4 bg-tetra-slate-light border border-tetra-border space-y-4">
+              <div class="flex items-center justify-between border-b border-tetra-border pb-2">
+                <span class="text-xs font-mono uppercase text-tetra-cobalt-light font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 bg-tetra-cobalt"></span>
+                  [ 4. LOCALIZAÇÃO DO SANTUÁRIO // VIA CEP ]
+                </span>
+                <span class="text-[10px] font-mono text-tetra-muted">BUSCA AUTOMÁTICA</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label for="cep-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
+                    CEP (8 DÍGITOS) *
+                  </label>
+                  <div class="flex gap-2">
+                    <input
+                      id="cep-input"
+                      type="text"
+                      formControlName="cep"
+                      placeholder="01001000"
+                      maxlength="9"
+                      (blur)="onCepBlur()"
+                      class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-cobalt rounded-none"
+                      [class.border-tetra-carmine]="isFieldInvalid('cep')"
+                    />
+                    <button
+                      type="button"
+                      (click)="onCepBlur()"
+                      [disabled]="isSearchingCep()"
+                      class="px-3 py-2 bg-tetra-cobalt text-white font-mono text-xs uppercase font-bold hover:bg-tetra-cobalt-light btn-brutalist disabled:opacity-50"
+                    >
+                      @if (isSearchingCep()) {
+                        ...
+                      } @else {
+                        BUSCAR
+                      }
+                    </button>
+                  </div>
+                  @if (cepError()) {
+                    <span class="block text-[10px] font-mono text-tetra-carmine mt-1">
+                      {{ cepError() }}
+                    </span>
+                  }
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label for="address-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
+                    LOGRADOURO / ENDEREÇO *
+                  </label>
+                  <input
+                    id="address-input"
+                    type="text"
+                    formControlName="address"
+                    placeholder="Preenchido automaticamente pelo CEP..."
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs focus:outline-none focus:border-tetra-carmine rounded-none"
+                    [class.border-tetra-carmine]="isFieldInvalid('address')"
+                  />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="city-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
+                    CIDADE *
+                  </label>
+                  <input
+                    id="city-input"
+                    type="text"
+                    formControlName="city"
+                    placeholder="Cidade"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs rounded-none"
+                  />
+                </div>
+
+                <div>
+                  <label for="state-input" class="block text-[10px] font-mono uppercase text-tetra-muted mb-1">
+                    ESTADO (UF) *
+                  </label>
+                  <input
+                    id="state-input"
+                    type="text"
+                    formControlName="state"
+                    placeholder="UF"
+                    class="w-full px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs rounded-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- ARG Code Discount Input -->
+            <div class="p-4 bg-tetra-slate-light border border-tetra-border space-y-3">
+              <label for="arg-code" class="block text-xs font-mono uppercase text-tetra-emerald font-bold">
+                [ 5. POSSUI CÓDIGO <app-lore-term key="arg">ARG</app-lore-term> DESTRANCADO? ]
+              </label>
+
+              <div class="flex gap-2">
+                <input
+                  id="arg-code"
+                  type="text"
+                  formControlName="argCode"
+                  placeholder="DIGITE O CÓDIGO ARG DA CÂMARA..."
+                  class="flex-1 px-3 py-2 bg-tetra-graphite border border-tetra-border text-tetra-parchment font-mono text-xs uppercase focus:outline-none focus:border-tetra-emerald rounded-none"
+                />
+                <button
+                  type="button"
+                  (click)="applyArgDiscount()"
+                  class="px-4 py-2 bg-tetra-emerald text-tetra-graphite font-mono text-xs uppercase font-bold hover:bg-emerald-400 btn-brutalist"
+                >
+                  VALIDAR CÓDIGO
+                </button>
+              </div>
+
+              @if (argFeedback()) {
+                <p 
+                  class="font-mono text-xs"
+                  [class.text-tetra-emerald]="appliedDiscount() > 0"
+                  [class.text-tetra-carmine]="appliedDiscount() === 0"
+                >
+                  {{ argFeedback() }}
+                </p>
+              }
+            </div>
+
           </div>
 
-          @if (bookingForm.invalid) {
-            <p class="text-[10px] font-mono text-tetra-muted text-right">
-              * Preencha todos os campos obrigatórios e consulte o CEP para habilitar o envio do manifesto.
-            </p>
-          }
+          <!-- Right Column: Live Tactical Summary & Submission (4 Columns Sticky) -->
+          <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+            
+            <div class="bg-tetra-slate border-2 border-tetra-border p-6 shadow-hard space-y-5">
+              <div class="flex items-center justify-between border-b border-tetra-border pb-3">
+                <span class="font-grotesk text-sm font-bold uppercase text-tetra-parchment flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 bg-tetra-carmine"></span>
+                  MANIFESTO DE CONVOCAÇÃO
+                </span>
+                <span class="text-[10px] font-mono text-tetra-solar font-bold">AO VIVO</span>
+              </div>
+
+              <!-- Selected Chamber Tactical Info -->
+              <div class="p-3 bg-tetra-graphite border border-tetra-border font-mono text-xs space-y-1.5">
+                <span class="block text-[10px] uppercase text-tetra-muted">// CÂMARA DESIGNADA:</span>
+                @if (selectedChamber(); as ch) {
+                  <div class="font-bold text-tetra-parchment">
+                    {{ ch.code }} // {{ ch.name }}
+                  </div>
+                  <div class="text-[11px] text-tetra-solar">
+                    R$ {{ ch.pricePerInitiate.toFixed(2) }} / iniciado
+                  </div>
+                } @else {
+                  <div class="text-tetra-muted italic text-[11px]">
+                    Nenhuma câmara selecionada ainda.
+                  </div>
+                }
+              </div>
+
+              <!-- Calculations Breakdown -->
+              <div class="font-mono text-xs space-y-2 border-t border-tetra-border pt-4">
+                <div class="flex justify-between text-tetra-muted">
+                  <span>CONTINGENTE:</span>
+                  <span class="text-tetra-parchment font-bold">{{ bookingForm.value.partySize || 2 }} Súditos</span>
+                </div>
+                
+                @if (selectedChamber(); as ch) {
+                  <div class="flex justify-between text-tetra-muted">
+                    <span>TRIBUTO BASE:</span>
+                    <span class="text-tetra-parchment">R$ {{ (ch.pricePerInitiate * (bookingForm.value.partySize || 2)).toFixed(2) }}</span>
+                  </div>
+                }
+
+                @if (appliedDiscount() > 0) {
+                  <div class="flex justify-between text-tetra-emerald font-bold">
+                    <span>DESCONTO ARG:</span>
+                    <span>-{{ appliedDiscount() }}%</span>
+                  </div>
+                }
+
+                <div class="border-t border-tetra-border pt-3 flex items-baseline justify-between">
+                  <span class="text-xs uppercase text-tetra-muted font-bold">TOTAL:</span>
+                  <div class="text-right">
+                    <span class="font-grotesk text-2xl font-bold text-tetra-parchment">
+                      R$ {{ finalPrice().toFixed(2) }}
+                    </span>
+                    @if (appliedDiscount() > 0) {
+                      <span class="block text-[10px] font-mono text-tetra-emerald uppercase font-bold">
+                        ★ QUARTA COR APLICADA
+                      </span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <button
+                type="submit"
+                [disabled]="bookingForm.invalid || isSubmitting()"
+                class="w-full py-3.5 bg-tetra-carmine text-white font-mono text-xs uppercase font-bold hover:bg-tetra-carmine-hover border border-black btn-brutalist shadow-hard disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+              >
+                @if (isSubmitting()) {
+                  ENVIANDO MANIFESTO...
+                } @else {
+                  CONFIRMAR RITO DE INICIAÇÃO &rarr;
+                }
+              </button>
+
+              @if (bookingForm.invalid) {
+                <p class="text-[10px] font-mono text-tetra-muted text-center leading-relaxed">
+                  * Complete todos os campos obrigatórios e consulte o CEP para habilitar a convocação.
+                </p>
+              }
+            </div>
+
+            <!-- Ritual Security Guidelines -->
+            <div class="bg-tetra-slate border border-tetra-border p-4 font-mono text-[11px] text-tetra-muted space-y-2">
+              <span class="text-tetra-parchment font-bold block uppercase">// DIRETRIZES DE ENTRADA:</span>
+              <p>• Apresentação obrigatória com 15 minutos de antecedência.</p>
+              <p>• Dispositivos de comunicação pessoal serão lacrados.</p>
+              <p>• Tolerância zero a atrasos sob pena de expiração do rito.</p>
+            </div>
+
+          </div>
 
         </form>
       }

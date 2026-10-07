@@ -8,15 +8,15 @@ import { DatePipe } from '@angular/common';
   standalone: true,
   imports: [RouterLink, DatePipe],
   template: `
-    <div class="max-w-4xl mx-auto my-8 font-mono space-y-8">
+    <div class="space-y-8 font-mono">
       
       <!-- Admin Header / Protocol Banner -->
-      <div class="bg-tetra-slate border-2 border-tetra-border p-6 shadow-hard-lg">
+      <div class="bg-tetra-slate border-2 border-tetra-border p-6 sm:p-8 shadow-hard bg-brutalist-grid">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-tetra-border pb-4 mb-6">
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="w-3 h-3 bg-tetra-carmine shadow-hard-sm"></span>
-              <h1 class="font-grotesk text-2xl font-bold uppercase tracking-wide text-tetra-parchment">
+              <h1 class="font-grotesk text-2xl sm:text-3xl font-bold uppercase tracking-wide text-tetra-parchment">
                 Setor de Supervisão // Terminal 04
               </h1>
             </div>
@@ -40,7 +40,7 @@ import { DatePipe } from '@angular/common';
         </div>
 
         <!-- Token Payload Details Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           
           <div class="bg-tetra-graphite border border-tetra-border p-4 space-y-2">
             <span class="text-tetra-muted block text-[11px] uppercase">// OPERADOR RESPONSÁVEL</span>
@@ -68,7 +68,7 @@ import { DatePipe } from '@angular/common';
             </div>
           </div>
 
-          <div class="bg-tetra-graphite border border-tetra-border p-4 space-y-2 md:col-span-2">
+          <div class="bg-tetra-graphite border border-tetra-border p-4 space-y-2">
             <span class="text-tetra-muted block text-[11px] uppercase">// EXPIRAÇÃO DA SESSÃO</span>
             <div class="font-bold text-tetra-parchment">
               {{ auth.usuario()?.expiraEM | date:'dd/MM/yyyy HH:mm:ss' }}

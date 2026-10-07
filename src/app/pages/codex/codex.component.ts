@@ -9,7 +9,7 @@ import { GlossaryCategory } from '../../models/glossary.model';
   standalone: true,
   imports: [FormsModule],
   template: `
-    <div class="space-y-12 max-w-5xl mx-auto">
+    <div class="space-y-8">
       
       <!-- Banner -->
       <section class="bg-tetra-slate border-2 border-tetra-border p-6 sm:p-8 shadow-hard bg-brutalist-grid">
@@ -29,7 +29,7 @@ import { GlossaryCategory } from '../../models/glossary.model';
       </section>
 
       <!-- The 4 Pillars of Initiation (Polygondwanaland Cycle) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         
         <div class="bg-tetra-slate border border-tetra-border p-5 shadow-hard">
           <span class="font-mono text-xs uppercase text-tetra-muted font-bold block mb-1">
@@ -148,7 +148,7 @@ import { GlossaryCategory } from '../../models/glossary.model';
       <section id="glossario" class="space-y-6 scroll-mt-20">
         
         <!-- Glossary Header -->
-        <div class="bg-tetra-slate border-2 border-tetra-border p-6 shadow-hard flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-tetra-slate border-2 border-tetra-border p-6 sm:p-8 shadow-hard flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div class="flex items-center gap-2 mb-1">
               <span class="w-3 h-3 bg-tetra-carmine shadow-hard-sm"></span>
@@ -206,7 +206,7 @@ import { GlossaryCategory } from '../../models/glossary.model';
         </div>
 
         <!-- Terms Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           @for (term of glossaryService.filteredTerms(); track term.key) {
             <article class="bg-tetra-slate border border-tetra-border hover:border-tetra-carmine p-5 shadow-hard transition-colors flex flex-col justify-between">
               <div>
